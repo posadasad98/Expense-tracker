@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Expense_Tracker.Models;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Expense_Tracker.Controllers
 {
@@ -19,10 +20,26 @@ namespace Expense_Tracker.Controllers
         }
 
         // GET: Transaction
-        public async Task<IActionResult> Index()
+        //public async Task<IActionResult> Index()
+        //{
+        //    var applicationDbContext = _context.Transactions.Include(t => t.Category);
+        //    return View(await applicationDbContext.ToListAsync());
+
+        //
+        public async Task<IActionResult> Index(string? categoria, DateTime? date)
         {
-            var applicationDbContext = _context.Transactions.Include(t => t.Category);
-            return View(await applicationDbContext.ToListAsync());
+            IQueryable<Transaction> query = _context.Transactions.Include(t => t.Category);
+                if (!string.IsNullOrEmpty(categoria))
+            {
+                query = query.Where(t => t.Category.Title == categoria);
+            }
+            if (date != null)
+            {
+                query = query.Where(t => t.Date == date);
+            }
+            var transactions = await query.ToListAsync();
+            return View(transactions);
+
         }
 
         public IActionResult AddOrEdit(int id = 0)
@@ -77,5 +94,7 @@ namespace Expense_Tracker.Controllers
             CategoryCollection.Insert(0, DefaultCategory);
             ViewBag.Categories = CategoryCollection;
         }
+
+
     }
 }

@@ -15,7 +15,7 @@
             <e-grid-columns>
                 <e-grid-column headerText="Category"  field="TitleWithIcon"></e-grid-column>
                 <e-grid-column headerText="Type" template="#typeColumnTemplate" width="150px"></e-grid-column>
-                <e-grid-column headerText="Color" template="#colorColumnTemplate" width="150px"></e-grid-column>
+                <e-grid-column headerText="Color"  template="#colorColumnTemplate" width="80px"></e-grid-column>
                 <e-grid-column headerText="Actions" template="#actionColumnTemplate" width="100px"></e-grid-column>
             </e-grid-columns>
         </ejs-grid>
@@ -37,7 +37,7 @@
 
 <script id="colorColumnTemplate" type="text/x-template">
     <div class="justify-content-center align-items-center">
-        <input type="text" style="background-color: ${Color}" readonly>
+        <input align="center" type="text" style="background-color: ${Color}" readonly>
     </div>
 
 </script>

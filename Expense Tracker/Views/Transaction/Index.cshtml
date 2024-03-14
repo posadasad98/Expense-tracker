@@ -5,6 +5,24 @@
     ViewData["PageActionText"] = "+ New Transaction";
     ViewData["PageActionUrl"] = "/Transaction/AddOrEdit";
 }
+<form asp-controller="Transaction" asp-action="Index" method="post">
+
+    <div class="form-group col-md-3 mt-3">
+        <ejs-datepicker id="date" name="date"
+                        placeholder="Date" floatLabelType="Always"
+                        format="MMM-dd-yy"></ejs-datepicker>
+    </div>
+
+    <div class="form-group col-md-3 mt-3">
+        <ejs-textbox id="category" placeholder="Categoria" name="categoria"
+                     floatLabelType="Always" multiline="true"></ejs-textbox>
+    </div>
+
+    <div class="form-group col-md-2 text-center mt-3">
+        <button type="submit" class="btn btn-outline-light">Filtrar</button>
+    </div>
+
+</form>
 
 <div class="row">
     <div class="col-md-7">
@@ -14,7 +32,7 @@
             <e-grid-columns>
                 <e-grid-column headerText="Category" field="CategoryTitleWithIcon"></e-grid-column>
                 <e-grid-column headerText="Date" field="Date" width="110px"
-                    type="date" format="MMM-dd-yy" textAlign="Left"></e-grid-column>
+                               type="date" format="MMM-dd-yy" textAlign="Left"></e-grid-column>
                 <e-grid-column headerText="Amount" field="FormattedAmount" textAlign="Right" width="110px"></e-grid-column>
                 <e-grid-column headerText="Actions" template="#actionColumnTemplate" width="100px"></e-grid-column>
             </e-grid-columns>
@@ -33,7 +51,7 @@
             <i class="fa-solid fa-pen fa-lg"></i>
         </a>
         <form action="/Transaction/Delete/${TransactionId}" method="post">
-            @Html.AntiForgeryToken()
+    @Html.AntiForgeryToken()
             <button type="submit" class="btn btn-sm btn-link no-a-decoration"
             onclick="return confirm(&quot;Are sure to delete this record?&quot;)">
                 <i class="fa-solid fa-trash-can fa-lg text-danger"></i>

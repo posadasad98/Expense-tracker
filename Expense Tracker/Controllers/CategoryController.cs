@@ -48,7 +48,9 @@ namespace Expense_Tracker.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            
             return View(category);
+           
         }
 
 
