@@ -37,6 +37,23 @@
                 <e-grid-column headerText="Actions" template="#actionColumnTemplate" width="100px"></e-grid-column>
             </e-grid-columns>
         </ejs-grid>
+
+        <div class="row pb-4">
+            
+            <div class="col-md-4">
+                <a href="@Url.Action("GenerarPdf", "Transaction", new{tipo="Income"})" class="btn btn-outline-light">Descargar Ingresos</a>
+            </div>
+
+            <div class="col-md-4">
+                <a href="@Url.Action("GenerarPdf", "Transaction", new{tipo="Expense"})" class="btn btn-outline-light">Descargar Egresos</a>
+            </div>
+
+            <div class="col-md-4">
+                <a href="@Url.Action("GenerarPdf", "Transaction")" class="btn btn-outline-light">Descargar Todo</a>
+            </div>
+
+        </div>
+
     </div>
     <div class="col-md-5">
         <div class="widget h-100 d-flex justify-content-center align-items-center">

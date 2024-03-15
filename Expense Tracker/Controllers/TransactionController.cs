@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Expense_Tracker.Models;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
+using iText.Layout.Properties;
 
 namespace Expense_Tracker.Controllers
 {
@@ -29,7 +33,7 @@ namespace Expense_Tracker.Controllers
         public async Task<IActionResult> Index(string? categoria, DateTime? date)
         {
             IQueryable<Transaction> query = _context.Transactions.Include(t => t.Category);
-                if (!string.IsNullOrEmpty(categoria))
+            if (!string.IsNullOrEmpty(categoria))
             {
                 query = query.Where(t => t.Category.Title == categoria);
             }
@@ -95,6 +99,89 @@ namespace Expense_Tracker.Controllers
             ViewBag.Categories = CategoryCollection;
         }
 
+        public ActionResult GenerarPdf(string? tipo, int totalIngresos, int totalEgresos)
+        {
+            IQueryable<Transaction> transactions;
+            if (tipo == "Income")
+            {
+                transactions = _context.Transactions.Include(t => t.Category).Where(t => t.Category.Type == "Income");
+                
+            }
+            else if (tipo == "Expense")
+            {
+                transactions = _context.Transactions.Include(t => t.Category).Where(t => t.Category.Type == "Expense");
+            }
+            else if (tipo == null)
+            {
+                transactions = _context.Transactions.Include(t => t.Category);
+            }
+            else
+            {
+                return BadRequest("Tipo de transaccion no valido ");
+            }
 
+            string rutaTempPdf = Path.GetTempFileName() + ".pdf";
+
+            using (PdfDocument pdfDocument = new PdfDocument(new PdfWriter(rutaTempPdf)))
+            {
+               
+                using (Document document = new Document(pdfDocument))
+                {
+                    document.Add(new Paragraph("Transacciones Personales de Alexis Posadas"));
+
+                    iText.Layout.Element.Table table = new iText.Layout.Element.Table(3);
+                    table.SetWidth(UnitValue.CreatePercentValue(100));
+
+                    table.AddHeaderCell("Categoria");
+                    table.AddHeaderCell("Monto");
+                    table.AddHeaderCell("Fecha");
+
+                    foreach (var transaction in transactions.ToList())
+                    {
+                        table.AddCell(transaction.Category.Title);
+                        table.AddCell(transaction.Amount.ToString());
+                        table.AddCell(transaction.Date.ToString());
+
+                        if (transaction.Category.Type == "Income")
+                        {
+                            
+                             totalIngresos = totalIngresos + transaction.Amount;
+                        }
+                        else if(transaction.Category.Type == "Expense")
+                        {
+                            
+                            totalEgresos = totalEgresos + transaction.Amount;
+                        }
+
+                        
+                    }
+                    if (tipo == "Balance")
+                    {
+                        var balance = totalIngresos - totalEgresos;
+                        document.Add(new Paragraph($"Total de Ingresos: {totalIngresos}"));
+                        document.Add(new Paragraph($"Total de Egresos: -{totalEgresos}"));
+                        document.Add(new Paragraph($"Balance Total: {balance}"));
+                    }
+                    else
+                    {
+                        var total = tipo == "Income" ? totalIngresos : -totalEgresos;
+                        document.Add(new Paragraph($"Total de {tipo}: {total}"));
+                    }
+                        document.Add(table);
+                }
+            }
+
+            // Leer el archivo PDF como un arreglo de bytes
+            byte[] fileBytes = System.IO.File.ReadAllBytes(rutaTempPdf);
+
+            // Eliminar el archivo temporal
+            System.IO.File.Delete(rutaTempPdf);
+
+            // Descargar el archivo PDF
+            return new FileStreamResult(new MemoryStream(fileBytes), "application/pdf")
+            {
+                FileDownloadName = "Estado.pdf"
+            };
+        }
     }
 }
